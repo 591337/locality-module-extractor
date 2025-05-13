@@ -4,10 +4,7 @@ import java.util.Calendar;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.syntactic_locality.OntologyModuleExtractor;
 import uk.ac.manchester.syntactic_locality.OntologyModuleExtractor.TYPEMODULE;
 
@@ -42,7 +39,7 @@ public class TestNewModuleExtractor {
 		
 		
 		//LOAD ONTOLOGY		
-		ontoToModularizeIRI=IRI.create("https://raw.githubusercontent.com/ernestojimenezruiz/oaei-evaluation/master/ontologies/phenotype/2017/doid_noimports.owl");
+		ontoToModularizeIRI=IRI.create("https://purl.obolibrary.org/obo/go.owl");
 		
 		ontologyManager = OWLManager.createOWLOntologyManager();    	
     	ontoToModularize = ontologyManager.loadOntology(ontoToModularizeIRI);
@@ -75,7 +72,9 @@ public class TestNewModuleExtractor {
 			//extractor.extractModule4Entity(ent, TYPEMODULE.BOTTOM_TOP_LOCALITY); //Star with only 2 iterations
 			//extractor.extractModule4Entity(ent, TYPEMODULE.STAR); //Start module
 			
-			
+			if (extractor.getModuleEntities().stream().filter(a -> a instanceof OWLClass).count() > 50 || extractor.getModuleEntities().stream().noneMatch(a -> a instanceof OWLObjectProperty)) {
+				continue;
+			}
 			System.out.println("\tSize module entities: " + extractor.getModuleEntities().size());
 			System.out.println("\tSize module axioms: " + extractor.getModuleAxioms().size());
 			
@@ -95,14 +94,14 @@ public class TestNewModuleExtractor {
 			//module.getIndividualsInSignature().size();
 			
 			//STORE MODULE
-			/*
-			physicalModuleIRI = IRI.create("file:/home/ernesto/LocalityExtractor/modules/" + getEntityLabel(ent.getIRI().toString()) + ".owl");
+
+			physicalModuleIRI = IRI.create("file:/home/martint/git/master/locality-module-extractor/module/" + ent.getIRI().getFragment() + ".owl");
 						
 			ontologyManager.saveOntology(
 					extractor.getModuleOntology(moduleIRIstr), 
 					new RDFXMLOntologyFormat(), 
 					physicalModuleIRI);
-			*/
+
 			
 			num_modules++;
 			
